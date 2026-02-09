@@ -7,7 +7,7 @@ import plotly.express as px # plotly is a library for creating interactive visua
 import plotly.graph_objects as go # plotly.graph_objects is a module for creating complex visualizations
 from pathlib import Path
 
-df = pd.read_excel(r"C:\Users\Mithun Verma\OneDrive - ATTERO RECYCLING PRIVATE LIMITED\Desktop\Selsmart Data\Reports\MIS Selsmart\MIS\MIS Overview of Selsmart Current Pending.xlsx") # reading the data from an Excel file
+df = pd.read_excel(r"MIS Overview of Selsmart Current Pending.xlsx") # reading the data from an Excel file
 df_status = df['Order Status'].value_counts().reset_index() # creating an aggregated dataframe with order status counts
 df_status.columns = ['Order Status', 'Count'] # renaming columns for the chart
 st.set_page_config(layout="wide") # setting the page layout to wide
@@ -67,19 +67,16 @@ with view1:
     expander = st.expander("Total Orders") # creating an expander to view the data
     data = df[["Order No", "Order Status", "State", "Order Date","Status Date","Warehouse Location"]] # selecting specific columns to display in the expander
     expander.write(data) # displaying the selected data in the expander
-with dwn1:
-    st.download_button(label="Download Total Orders", 
-                        data=df.to_csv(index=False).encode("utf-8"), # converting the dataframe to CSV format
-                        file_name="total_orders.csv", # specifying the file name for the downloaded file
-                        mime="text/csv", # specifying the MIME type for CSV files
-                        )    
+
 # create two columns for the additional charts
 col6, col7 = st.columns([0.5, 0.5])
 
 with col6:
-        fig1 = px.line(df, x="Order Date", y="Count", color="Order Status", title="Trend of Orders Over Time", template="plotly_white") # creating a line chart to show the trend of orders over time
-        st.plotly_chart(fig1, use_container_width=True) # displaying the line chart in the sixth column
+    fig1 = px.histogram(df, x="Order Date", color="Order Status", title="Trend of Orders Over Time", template="plotly_white") # creating a histogram to show the trend of orders over time
+    st.plotly_chart(fig1, use_container_width=True) # displaying the histogram in the sixth column
 
 with col7:
-        fig2 = px.bar(df, x="State Date", y="Count", color="Order Status", title="Distribution of Orders by State", template="plotly_white") # creating a bar chart to show the distribution of orders by state
-        st.plotly_chart(fig2, use_container_width=True) # displaying the bar chart in the seventh column    
+    state_counts = df['State'].value_counts().reset_index()
+    state_counts.columns = ['State', 'Count']
+    fig2 = px.bar(state_counts, x="State", y="Count", title="Distribution of Orders by State", template="plotly_white") # creating a bar chart to show the distribution of orders by state
+    st.plotly_chart(fig2, use_container_width=True) # displaying the bar chart in the seventh column    
